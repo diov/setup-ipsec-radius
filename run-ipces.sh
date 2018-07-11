@@ -3,6 +3,7 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
 export PATH
 
 function init_strongswan() {
+    load_env
     get_ip
     install_strongswan
     backup_config
@@ -12,6 +13,16 @@ function init_strongswan() {
     config_radius
     config_secrets
     config_iptables
+}
+
+function load_env() {
+    vpn_env="./ipsec.env"
+    if [ -f "${vpn_env}" ]; then
+        . "$vpn_env"
+    else
+        echo "VPN environment variables not found."
+        return 1;
+    fi
 }
 
 function get_ip() {
