@@ -106,7 +106,6 @@ conn iOS_OSX
     leftid = ${DOMAIN}
     leftsendcert = always
     leftsubnet = 0.0.0.0/0
-    leftca = ca.cert.pem
     leftcert = server.cert.pem
     right = %any
     rightauth = eap-radius
@@ -158,12 +157,25 @@ charon {
         include strongswan.d/charon/*.conf
     }
     filelog {
-        # 配置日志路径及级别
-        /var/log/strongswan.log {
+        /var/log/charon.log {
             time_format = %b %e %T
-            default = 2
+            ike_name = yes
             append = no
+            default = 2
             flush_line = yes
+        }
+        stderr {
+            ike = 2
+            knl = 3
+        }
+    }
+    syslog {
+        identifier = charon-custom
+        daemon {
+        }
+        auth {
+            default = -1
+            ike = 0
         }
     }
     dns1 = 114.114.114.114
