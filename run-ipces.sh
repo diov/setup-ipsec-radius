@@ -13,6 +13,7 @@ function init_strongswan() {
     config_radius
     config_secrets
     config_iptables
+    config_boot
 }
 
 function load_env() {
@@ -261,6 +262,16 @@ iptables-restore < /etc/iptables.rules
 
 EOF
     chmod +x /etc/network/if-up.d/iptables
+}
+
+function config_boot() {
+    cat > /etc/profile.d/ipsec_auto_start.sh<<EOF
+#!/bin/sh
+cp /root/.acme.sh/zoonode.com/ca.cer /etc/strongswan/ipsec.d/cacerts/
+ipsec start
+
+EOF
+    chmod +x /etc/profile.d/ipsec_auto_start.sh
 }
 
 init_strongswan
