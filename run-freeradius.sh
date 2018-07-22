@@ -6,6 +6,7 @@ function init_freeradius() {
     install_freeradius
     
     install_daloradius
+    config_boot
 }
 
 function install_freeradius() {
@@ -27,4 +28,24 @@ function install_daloradius() {
     cd /var/www/html/daloradius/
     mysql -u radius -p radius < contrib/db/fr2-mysql-daloradius-and-freeradius.sql
     mysql -u radius -p radius < contrib/db/mysql-daloradius.sql
+}
+
+function config_boot() {
+    cat > /etc/init.d/radius_setup<<EOF
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          radius_setup
+# Required-Start:    \$local_fs \$remote_fs \$network \$syslog
+# Required-Stop:     \$local_fs \$remote_fs \$network \$syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: starts the freeradius daemon
+# Description:       starts freeradius using start-stop-daemon
+### END INIT INFO
+
+systemctl start freeradius.service
+
+EOF
+    chmod +x /etc/init.d/radius_setup
+    update-rc.d radius_setup defaults 101
 }

@@ -267,13 +267,24 @@ EOF
 }
 
 function config_boot() {
-    cat > /etc/profile.d/ipsec_auto_start.sh<<EOF
+    cat > /etc/init.d/ipsec_setup<<EOF
 #!/bin/sh
-cp /root/.acme.sh/zoonode.com/ca.cer /etc/strongswan/ipsec.d/cacerts/
+### BEGIN INIT INFO
+# Provides:          ipsec_setup
+# Required-Start:    \$local_fs \$remote_fs \$network \$syslog
+# Required-Stop:     \$local_fs \$remote_fs \$network \$syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: starts the strongswan daemon
+# Description:       starts strongswan using start-stop-daemon
+### END INIT INFO
+
+cp /root/.acme.sh/${DOMAIN}/ca.cer /etc/strongswan/ipsec.d/cacerts/
 ipsec start
 
 EOF
-    chmod +x /etc/profile.d/ipsec_auto_start.sh
+    chmod +x /etc/init.d/ipsec_setup
+    update-rc.d /etc/init.d/ipsec_setup defaults 100
 }
 
 init_strongswan
